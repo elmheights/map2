@@ -1,19 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simple map</title>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
-    />
-    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
 
-  <body>
-    <div id="map"></div>
-    <script src="script.js"></script>
-  </body>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>Leaflet Everything!</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+    <script src='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
+    <link href='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet'>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.0.1/leaflet-omnivore.min.js'></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet'>
+    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet'>
+    <style>
+body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+    <div id='map'></div>
+<script>
+   let config = {
+      minZoom: 10,
+      maxZoom: 18,
+    };
+    lat = 39.156993003;
+    lng = -86.51996896;
+ L.Icon.Default.prototype.options.iconSize = [1,1];
+ L.Icon.Default.prototype.options.iconAnchor = [15,30];
+    map = L.map("map", config).setView([lat, lng]);
+    // Used to load and display tile layers on the map
+    // Most tile servers require attribution, which you can set under `Layer`
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+// "latitude","longitude","registered_date","expiredate","property_address","contact_name","contact_address","contact_city","contact_state","contact_zip","buildings","units","bedrooms","occup_load"
+
+function eachLayer(layer) {
+   var feature = layer.toGeoJSON();
+   r0 = feature.properties;
+   s = "Address: " + r0.property_address + ",\
+ Buildings: " + r0.buildings + ",\
+ Units: " + r0.units + ",\
+ Bedrooms: " + r0.bedrooms + ",\
+ Occupload: " + r0.occup_load + ",\
+ Contact: " + r0.contact_name + ",\
+ ContactAddr: " + r0.contact_address + ",\
+ ContactCity: " + r0.contact_city + ",\
+ ContactState: " + r0.contact_state + ",\
+ Expiredate: " + r0.expiredate;
+//    layer.bindPopup("Address: " + feature.properties.address);
+    layer.bindPopup(s);
+};
+
+var points = omnivore.csv('./new.all.rentals.csv', {
+    icon: L.mapbox.marker.icon({
+        'marker-symbol': 'goo',
+        'marker-color': '59245f'
+    })
+}).on('ready', function() {
+    map.fitBounds(points.getBounds());
+    var markers = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 20
+    });
+    markers.addLayer(points);
+    map.addLayer(markers);
+    points.eachLayer(eachLayer);
+});
+
+    </script>
+</body>
 </html>
