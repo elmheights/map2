@@ -42,7 +42,7 @@ body { margin:0; padding:0; }
 function eachLayer(layer) {
    var feature = layer.toGeoJSON();
    r0 = feature.properties;
-   s = "Address: " + r0.property_address + ",\
+   s = "Address: " + r0.address + ",\
  Neighborhood: " + r0.neighborhood;
 //    layer.bindPopup("Address: " + feature.properties.address);
     layer.bindPopup(s);
