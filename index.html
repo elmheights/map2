@@ -22,14 +22,15 @@ body { margin:0; padding:0; }
     <div id='map'></div>
 <script>
    let config = {
-      minZoom: 10,
+      minZoom: 8,
       maxZoom: 18,
     };
+    zoom = 18;
     lat = 39.156993003;
     lng = -86.51996896;
  L.Icon.Default.prototype.options.iconSize = [1,1];
  L.Icon.Default.prototype.options.iconAnchor = [15,30];
-    map = L.map("map", config).setView([lat, lng]);
+    map = L.map("map", config).setView([lat, lng], zoom);
     // Used to load and display tile layers on the map
     // Most tile servers require attribution, which you can set under `Layer`
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -56,7 +57,7 @@ function eachLayer(layer) {
     layer.bindPopup(s);
 };
 
-var points = omnivore.csv('new.all.rentals.csv', {
+var points = omnivore.csv('new.all.rentals.20240208.csv', {
     icon: L.mapbox.marker.icon({
         'marker-symbol': 'goo',
         'marker-color': '59245f'
