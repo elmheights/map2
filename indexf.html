@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title>Bloomington Fire Response</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+    <script src='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
+    <link href='//api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet'>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.0.1/leaflet-omnivore.min.js'></script>
+    <script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet'>
+    <link href='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet'>
+    <style>
+body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+
+<body>
+    <div id='map'></div>
+<script>
+   let config = {
+      minZoom: 8,
+      maxZoom: 18,
+    };
+    zoom = 18;
+    lat = 39.156993003;
+    lng = -86.51996896;
+ L.Icon.Default.prototype.options.iconSize = [1,1];
+ L.Icon.Default.prototype.options.iconAnchor = [15,30];
+    map = L.map("map", config).setView([lat, lng], zoom);
+    // Used to load and display tile layers on the map
+    // Most tile servers require attribution, which you can set under `Layer`
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+// incident_number,unit,incident_type,incident_type_description,alarm_at,created_at,updated_at,dispatch_notified_at,address,city,state,zip,response_time,latitude,longitude,dispatch_at,enroute_at,arrived_at,cleared_at
+
+function eachLayer(layer) {
+   var feature = layer.toGeoJSON();
+   r0 = feature.properties;
+   s = "Address: " + r0.address + ",<br>\
+ Type: " + r0.incident_type_description + ",<br>\
+ Unit: " + r0.unit + ",<br>\
+ Alarm_at: " + r0.alarm_at + ",<br>\
+ Arrived_at: " + r0.arrived_at + "<br>";
+   layer.bindPopup(s);
+};
+
+//var points = omnivore.csv('Fire_Incident_Responses.csv', {
+var points = omnivore.csv('fr.csv', {
+    icon: L.mapbox.marker.icon({
+        'marker-symbol': 'goo',
+        'marker-color': '59245f'
+    })
+}).on('ready', function() {
+    map.fitBounds(points.getBounds());
+    var markers = L.markerClusterGroup({
+        showCoverageOnHover: true,
+        maxClusterRadius: 20
+    });
+    markers.addLayer(points);
+    map.addLayer(markers);
+    points.eachLayer(eachLayer);
+});
+
+    </script>
+</body>
+</html>
